@@ -363,27 +363,8 @@ class tega_speech_ui(QtGui.QWidget):
                     self.label.setText("Sending animation.")
                     self.wait_for_motion()
 
-                # Otherwise, it's a speech filename. If we are using the audio
-                # entrainment module, send the filename there; otherwise, send
+                # Otherwise, it's a speech filename, send
                 # to the robot using ROS.
-                elif self.use_entrainer:
-                    # Send the filename to the audio entrainer. Append the
-                    # filepath to the filename before sending. Note that an
-                    # empty filepath can be provided if the full filepaths are
-                    # given in the script. We assume that corresponding viseme
-                    # files have the same name but with a .txt extension, and
-                    # are located at the viseme filepath. If full filepaths are
-                    # provided in the script, then an empty filepath should be
-                    # provided for the viseme filepath as well, and the viseme
-                    # text files should be located in the same directory as the
-                    # audio.
-                    self.ros_node.send_entrain_audio_message(
-                            self.audio_base_dir + sp,
-                            self.viseme_base_dir + sp.replace(".wav",".txt"),
-                            self.speaker_age,
-                            self.entrain_checkbox.isChecked())
-                    self.label.setText("Sending entrain speech command.")
-                    self.wait_for_speaking()
                 else:
                     # Send directly to the robot.
                     self.ros_node.send_speech_message(sp)

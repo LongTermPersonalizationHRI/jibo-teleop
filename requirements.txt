@@ -1,0 +1,4 @@
+pyyaml
+rospkg
+catkin_pkg
+pyaudio

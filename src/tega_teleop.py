@@ -41,6 +41,7 @@ from opal_tablet_ui import opal_tablet_ui
 from tega_fidget_ui import tega_fidget_ui
 from tega_volume_ui import tega_volume_ui
 from tega_teleop_flags import tega_teleop_flags
+from AudioRecorder import AudioRecorder
 
 class tega_teleop(QtGui.QMainWindow):
     """ Tega teleoperation interface """

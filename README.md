@@ -1,8 +1,25 @@
-# tega\_teleop
+# jibo-gfta-speech-collection
 
-A python rosnode for teleoperating the Tega robot and an opal tablet. Creates a
+A python rosnode for teleoperating the Jibo robot to conduct the GFTA assessment and record speech samples. Creates a
 Qt GUI with buttons for triggering speech, lookats, and animations on the
 robot, as well as commands to send to an opal tablet.
+
+## Installation
+
+If you haven't done this yet, set up a python3 virtual env with:
+`virtualenv -p $(which python3) ~/python-virtualenvs/jibo-gfta-py3 --system-site-packages`
+
+YOU ONLY NEED TO DO THIS ONCE!
+
+All subsequent times, you just need to activate it with
+`source ~/python-virtualenvs/jibo-gfta-py3/bin/activate`
+
+### Install System Dependencies
+`sudo apt-get install python3-pyside`
+`sudo apt-get install portaudio19-dev`
+
+### Install Python Dependencies
+`pip install -r requirements.txt`
 
 ## Configure and Run
 
@@ -11,8 +28,6 @@ robot, as well as commands to send to an opal tablet.
 optional arguments:
 
     - `-h`, `--help`: show this help message and exit
-    - `-e`, `--use-entrainer`: Send audio to the audio entrainer on the way to
-      the robot.
 
 On startup, this python node will try to connect to roscore. If roscore is not
 running, the program will exit.
@@ -124,21 +139,6 @@ scripts without needing to change the config file! Same deal for static
 scripts, only they are loaded from the tega\_teleop\static\_scripts directory
 (sibling to \src and \scripts).
 
-### Audio entrainer
-
-The [audio entrainer](https://github.com/mitmedialab/rr_audio_entrainer)
-expects full filepaths when you send it audio (i.e., it expects you to give it
-a wav file it can open). So to accommodate this, you can either specify full
-filepaths in your script, or, in the config file, specify a directory on your
-file system where you have put all the wav files that will be used. These then
-get streamed to the robot. But you should only do one or the other!
-
-If you put full filepaths in your script, you should leave the `audio_base_dir`
-option in the config file blank (i.e., put an empty string there or delete it
-entirely from the file). In this case, you should also leave `viseme_base_dir`
-blank and put your viseme text files in the same directory as your audio files,
-because currently, we assume that viseme files have the same name as their audio
-files, and just replace the file extension.
 
 ### Opal tablet communication
 
@@ -198,13 +198,12 @@ on the ROS topic "/rr/state".
 
 This program was developed and tested with:
 
-- Python 2.7.6
-- ROS Indigo
+- Python 3.5.2
+- ROS Kinetic
 - [sar\_opal\_msgs](https://github.com/mitmedialab/sar_opal_msgs
   "/sar_opal_msgs") 4.0.0
 - [r1d1\_msgs](https://github.com/mitmedialab/r1d1_msgs) 8.0.0
-- [rr\_msgs](https://github.com/mitmedialab/rr_msgs) 3.0.0
-- Ubuntu 14.04 LTS (32-bit, 64-bit)
+- Ubuntu 16.04 LTS (32-bit, 64-bit)
 
 The Cyber4 study was run using tega\_teleop v1.0.1.
 
