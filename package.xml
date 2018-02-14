@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package>
+  <name>tega_teleop</name>
+  <version>2.5.2</version>
+  <description>An interface to remotely teleoperate the Tega robot</description>
+
+  <maintainer email="jakory@media.mit.edu">jakory</maintainer>
+  <license>MIT</license>
+  <url type="website">https://github.com/mitmedialab/tega_teleop</url>
+  <author email="jakory@media.mit.edu">jakory</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>std_msgs</run_depend>
+
+</package>
