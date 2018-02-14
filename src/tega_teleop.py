@@ -31,6 +31,7 @@ import rospy # ROS
 from PySide import QtGui, QtCore # basic GUI stuff
 from r1d1_msgs.msg import TegaAction # ROS msgs
 from r1d1_msgs.msg import TegaState # ROS msgs
+
 from sar_opal_msgs.msg import OpalCommand # ROS msgs
 from tega_teleop_ros import tega_teleop_ros
 from tega_animation_ui import tega_animation_ui
@@ -51,7 +52,7 @@ class tega_teleop(QtGui.QMainWindow):
     # to do this before starting the node.
     ros_node = rospy.init_node('tega_teleop', anonymous=True)
 
-    def __init__(self, use_entrainer):
+    def __init__(self):
         """ Initialize teleop interface """
         # setup GUI teleop interface
         super(tega_teleop, self).__init__()
@@ -78,7 +79,7 @@ class tega_teleop(QtGui.QMainWindow):
 
         # setup ROS node publisher and subscriber
         self.ros_teleop = tega_teleop_ros(self.ros_node, self.ros_label,
-               self.flags, use_entrainer)
+               self.flags)
 
         # add animation buttons
         anim_ui = tega_animation_ui(self.ros_teleop)
@@ -102,24 +103,18 @@ class tega_teleop(QtGui.QMainWindow):
 
         # Add robot script playback buttons (mostly speech, but the scripts
         # can also list animations to play before or after an audio file).
-        speech_ui = tega_speech_ui(self.ros_teleop, self.flags, use_entrainer)
+        speech_ui = tega_speech_ui(self.ros_teleop, self.flags)
         self.central_layout.addWidget(speech_ui, 6, 0, 3, 7)
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        description='''Send commands to a Tega robot and an Opal device. Creates
+        description='''Send commands to a Jibo robot. Creates
             a Qt GUI with buttons for triggering speech, lookats, and
             animations on the robot, as well as commands to send to an Opal
-            device. Load custom scripts for robot behavior, and optionally send
-            audio through an audio entrainer module on the way to the robot.
+            device. Support the ability to load custom scripts for robot behavior.
             ''')
-    # The user can decide to send audio directly to the robot or to go through
-    # the audio entrainment module first.
-    parser.add_argument("-e", "--use-entrainer", action='store_true',
-            default=False, dest="use_entrainer",
-            help="Send audio to the audio entrainer on the way to the robot.")
 
     # Get arguments.
     args = parser.parse_args()
@@ -130,7 +125,7 @@ if __name__ == '__main__':
 
     # start teleop interface
     try:
-        teleop_window = tega_teleop(args.use_entrainer)
+        teleop_window = tega_teleop()
         teleop_window.show()
 
     # if roscore isn't running or shuts down unexpectedly

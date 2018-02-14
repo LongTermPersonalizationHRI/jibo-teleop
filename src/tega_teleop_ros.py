@@ -34,7 +34,7 @@ from std_msgs.msg import Header # standard ROS msg header
 class tega_teleop_ros():
     # ROS node
 
-    def __init__(self, ros_node, ros_label, flags, use_entrainer):
+    def __init__(self, ros_node, ros_label, flags):
         """ Initialize ROS """
         # we get a reference to the main ros node so we can do callbacks
         # to publish messages, and subscribe to stuff
@@ -59,14 +59,6 @@ class tega_teleop_ros():
         self.tablet_pub = rospy.Publisher('opal_tablet_command', OpalCommand,
                 queue_size = 10)
         self.tega_pub = rospy.Publisher('tega', TegaAction, queue_size = 10)
-
-        self.entrain_pub = None
-        self.state_pub = None
-        if use_entrainer:
-            self.entrain_pub = rospy.Publisher('rr/entrain_audio', EntrainAudio,
-                    queue_size = 10)
-            self.state_pub = rospy.Publisher('rr/state', InteractionState,
-                    queue_size = 10)
 
 
     def send_opal_message(self, command):
@@ -141,31 +133,6 @@ class tega_teleop_ros():
             msg.set_volume = True
             msg.percent_volume = volume
             self.tega_pub.publish(msg)
-            rospy.loginfo(msg)
-
-    def send_entrain_audio_message(self, speech, visemes, age, entrain):
-        """ Publish EntrainAudio message. """
-        if self.entrain_pub is not None:
-            print('\nsending entrain speech message: %s' % speech)
-            msg = EntrainAudio()
-            msg.header = Header()
-            msg.header.stamp = rospy.Time.now()
-            msg.audio = speech
-            msg.viseme_file = visemes
-            msg.age = age
-            msg.entrain = entrain
-            self.entrain_pub.publish(msg)
-            rospy.loginfo(msg)
-
-    def send_interaction_state_message(self, is_turn):
-        """ Publish InteractionState message. """
-        if self.state_pub is not None:
-            print('\nsending interaction state message: %s' % is_turn)
-            msg = InteractionState()
-            msg.header = Header()
-            msg.header.stamp = rospy.Time.now()
-            msg.is_participant_turn = is_turn
-            self.state_pub.publish(msg)
             rospy.loginfo(msg)
 
     def on_child_attn_msg(self, data):

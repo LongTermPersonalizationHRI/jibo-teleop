@@ -33,16 +33,12 @@ import time
 class tega_speech_ui(QtGui.QWidget):
 
 
-    def __init__(self, ros_node, flags, use_entrainer):
+    def __init__(self, ros_node, flags):
         """ Make controls to trigger speech playback """
         super(tega_speech_ui, self).__init__()
         # get reference to ros node so we can do callbacks to publish
         # messages
         self.ros_node = ros_node
-
-        # If we are using the audio entrainment module, speech will be sent
-        # there instead of directly to the robot.
-        self.use_entrainer = use_entrainer
 
         # pause indicator
         self.paused = False
@@ -122,27 +118,6 @@ class tega_speech_ui(QtGui.QWidget):
             print ("Could not read your json config file! Is it valid json?")
             pass
 
-        # Add box for setting the speaker's age (used with entrainment module).
-        # Also add a box to tell the entrain whether or not to entrain or to
-        # just stream audio.
-        if self.use_entrainer:
-            speaker_age_label = QtGui.QLabel(self.speech_box)
-            speaker_age_label.setText("Speaker's age:")
-            self.speech_layout.addWidget(speaker_age_label, 1, 5, 1, 2)
-            self.speaker_age_spin_box = QtGui.QSpinBox(self.speech_box)
-            self.speaker_age_spin_box.setSuffix(" years")
-            self.speaker_age_spin_box.setValue(5)
-            self.speaker_age = 5
-            self.speech_layout.addWidget(self.speaker_age_spin_box, 2, 5, 1, 1)
-            self.speaker_age_spin_box.valueChanged[int].connect(self.on_speaker_age_changed)
-
-            self.entrain_checkbox = QtGui.QCheckBox(self.speech_box)
-            self.entrain_checkbox.setText("Entrain?")
-            self.speech_layout.addWidget(self.entrain_checkbox, 0, 5, 1, 1)
-
-            self.turn_button = QtGui.QPushButton("CHILD TURN", self.speech_box)
-            self.turn_button.clicked.connect(self.send_participant_turn)
-            self.speech_layout.addWidget(self.turn_button, 4, 5, 1, 1)
 
         # TODO add the file paths to folders of scripts into config file!
         # make a dropdown list of available scripts to load
