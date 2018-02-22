@@ -96,7 +96,7 @@ class tega_speech_ui(QtGui.QWidget):
 
         # read config file to get script name and number of speech options
         # per line
-        # NOTE move config parsing to main tega_teleop.py and pass script name
+        # NOTE move config parsing to main jibo_teleop.py and pass script name
         # and number of options if we add anything not script/speech-related.
         try:
             with open("tega_teleop_config.json") as json_file:
