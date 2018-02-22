@@ -17,6 +17,7 @@ All subsequent times, you just need to activate it with
 ### Install System Dependencies
 `sudo apt-get install python3-pyside`
 `sudo apt-get install portaudio19-dev`
+`sudo apt-get install python3-dev`
 
 ### Install Python Dependencies
 `pip install -r requirements.txt`

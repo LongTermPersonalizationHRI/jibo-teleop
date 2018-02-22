@@ -24,18 +24,18 @@
 # SOFTWARE.
 
 from PySide import QtGui # basic GUI stuff
-from tega_teleop_ros import tega_teleop_ros
+from jibo_teleop_ros import jibo_teleop_ros
 import json
 import glob
 from functools import partial
 import time
 
-class tega_speech_ui(QtGui.QWidget):
+class jibo_speech_ui(QtGui.QWidget):
 
 
     def __init__(self, ros_node, flags):
         """ Make controls to trigger speech playback """
-        super(tega_speech_ui, self).__init__()
+        super(jibo_speech_ui, self).__init__()
         # get reference to ros node so we can do callbacks to publish
         # messages
         self.ros_node = ros_node
@@ -99,7 +99,7 @@ class tega_speech_ui(QtGui.QWidget):
         # NOTE move config parsing to main jibo_teleop.py and pass script name
         # and number of options if we add anything not script/speech-related.
         try:
-            with open("tega_teleop_config.json") as json_file:
+            with open("jibo_teleop_config.json") as json_file:
                 json_data = json.load(json_file)
             print ("Config file says: ")
             print (json_data)

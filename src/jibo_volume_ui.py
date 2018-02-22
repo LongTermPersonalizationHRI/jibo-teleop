@@ -24,13 +24,13 @@
 # SOFTWARE.
 
 from PySide import QtGui # Basic GUI stuff.
-from tega_teleop_ros import tega_teleop_ros
+from jibo_teleop_ros import jibo_teleop_ros
 
-class tega_volume_ui(QtGui.QWidget):
+class jibo_volume_ui(QtGui.QWidget):
 
     def __init__(self, ros_node):
         """ Make buttons to tell robot to play audio louder or quieter. """
-        super(tega_volume_ui, self).__init__()
+        super(jibo_volume_ui, self).__init__()
         # Get reference to ros node so we can do callbacks to publish messages.
         self.ros_node = ros_node
 

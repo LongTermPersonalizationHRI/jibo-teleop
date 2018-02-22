@@ -23,7 +23,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-class tega_teleop_flags:
+class jibo_teleop_flags:
 
     # is the child attending or not?
     _child_is_attending = True
