@@ -34,22 +34,22 @@ class jibo_teleop_flags:
     def child_is_attending(self,val):
         self._child_is_attending = val
 
-    # is tega currently playing audio?
-    # we get this info from the tega state rosmsgs
-    _tega_is_playing_sound = False
+    # is jibo currently playing audio?
+    # we get this info from the jibo state rosmsgs
+    _jibo_is_playing_sound = False
     @property
-    def tega_is_playing_sound(self):
-        return self._tega_is_playing_sound
-    @tega_is_playing_sound.setter
-    def tega_is_playing_sound(self,val):
-        self._tega_is_playing_sound = val
+    def jibo_is_playing_sound(self):
+        return self._jibo_is_playing_sound
+    @jibo_is_playing_sound.setter
+    def jibo_is_playing_sound(self,val):
+        self._jibo_is_playing_sound = val
 
-    # is tega currently doing a motion?
-    # we get this info from the tega state rosmsgs
-    _tega_is_doing_motion = False
+    # is jibo currently doing a motion?
+    # we get this info from the jibo state rosmsgs
+    _jibo_is_doing_motion = False
     @property
-    def tega_is_doing_motion(self):
-        return self._tega_is_doing_motion
-    @tega_is_playing_sound.setter
-    def tega_is_doing_motion(self,val):
-        self._tega_is_doing_motion = val
+    def jibo_is_doing_motion(self):
+        return self._jibo_is_doing_motion
+    @jibo_is_playing_sound.setter
+    def jibo_is_doing_motion(self,val):
+        self._jibo_is_doing_motion = val

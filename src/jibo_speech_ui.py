@@ -346,21 +346,27 @@ class jibo_speech_ui(QtGui.QWidget):
             for sp in speech_parts:
                 # wait until tega is not speaking or moving, then send the
                 # next command
-                while (self.flags.tega_is_playing_sound
-                       or self.flags.tega_is_doing_motion):
+                while (self.flags.jibo_is_playing_sound
+                       or self.flags.jibo_is_doing_motion):
                     time.sleep(0.1)
 
-                # If this part says "CHILD_TURN", set the interaction state and
-                # if we are using the audio entrainment module, send a message
-                # indicating that it is the child's turn to speak.
-                if sp == "PARTICIPANT_TURN":
-                    self.ros_node.send_interaction_state_message(True)
-                    self.label.setText("Sending child turn message.")
+                # # If this part says "CHILD_TURN", set the interaction state and
+                # # if we are using the audio entrainment module, send a message
+                # # indicating that it is the child's turn to speak.
+                # if sp == "PARTICIPANT_TURN":
+                #     self.ros_node.send_interaction_state_message(True)
+                #     self.label.setText("Sending child turn message.")
 
-                # if this part is an animation (all caps), send a motion command
-                elif (sp.isupper()):
+                # if this part is an animation (ends in .keys), send a motion command
+                if (sp.endswith('.keys')):
                     self.ros_node.send_motion_message(sp)
                     self.label.setText("Sending animation.")
+                    self.wait_for_motion()
+                
+                # if this part is a sound file (ends in .wav), send a sound command
+                elif (sp.endswith('.wav') or sp.endswith('.m4a')):
+                    self.ros_node.send_sound_message(sp)
+                    self.label.setText("Sending sound message.")
                     self.wait_for_motion()
 
                 # Otherwise, it's a speech filename, send
@@ -407,7 +413,7 @@ class jibo_speech_ui(QtGui.QWidget):
         """
         self.speaker_age = val
 
-    def wait_for_speaking(self, timeout=15):
+    def wait_for_speaking(self, timeout=1):
         """ Wait until we hear the robot start playing sound before going on to
         process the next command and wait for the robot to be done playing
         sound. We have to wait because when streaming audio through the audio
@@ -421,7 +427,7 @@ class jibo_speech_ui(QtGui.QWidget):
         """
         counter = 0
         increment = 0.1
-        while (not self.flags.tega_is_playing_sound and counter < timeout):
+        while (not self.flags.jibo_is_playing_sound and counter < timeout):
             counter += increment
             time.sleep(increment)
 
@@ -430,7 +436,7 @@ class jibo_speech_ui(QtGui.QWidget):
             print("Warning: timed out waiting for robot to start playing " \
                      "sound! timeout: " + str(timeout) + ". Moving on...")
 
-    def wait_for_motion(self, timeout=8):
+    def wait_for_motion(self, timeout=1):
         """ Wait until the robot has started playing an animation before going
         on to wait for the robot to be done playing it (similar to waiting for
         sound, above).
@@ -439,7 +445,7 @@ class jibo_speech_ui(QtGui.QWidget):
         # what to wait for.
         counter = 0
         increment = 0.1
-        while (not self.flags.tega_is_doing_motion and counter < timeout):
+        while (not self.flags.jibo_is_doing_motion and counter < timeout):
             counter += increment
             time.sleep(increment)
 

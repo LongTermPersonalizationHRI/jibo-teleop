@@ -97,16 +97,30 @@ class jibo_teleop_ros():
             msg.lookat = lookat
             self.jibo_pub.publish(msg)
             rospy.loginfo(msg)
+    
+    def send_sound_message(self, speech):
+        """ Publish JiboAction playback audio message """
+        if self.jibo_pub is not None:
+            print('\nsending sound message: %s' % speech)
+            msg = JiboAction()
+            # add header
+            msg.header = Header()
+            msg.header.stamp = rospy.Time.now()
+            msg.do_sound_playback = True
+            msg.audio_filename = speech
+            self.jibo_pub.publish(msg)
+            rospy.loginfo(msg)
 
     def send_speech_message(self, speech):
-        """ Publish JiboAction playback audio message """
+        """ Publish JiboAction playback TTS message """
         if self.jibo_pub is not None:
             print('\nsending speech message: %s' % speech)
             msg = JiboAction()
             # add header
             msg.header = Header()
             msg.header.stamp = rospy.Time.now()
-            msg.wav_filename = speech
+            msg.do_tts = True
+            msg.tts_text = speech
             self.jibo_pub.publish(msg)
             rospy.loginfo(msg)
 

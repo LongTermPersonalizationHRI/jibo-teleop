@@ -48,14 +48,14 @@ class tega_teleop(QtGui.QMainWindow):
     # export to the environment variable $ROS_IP to set the public
     # address of this node, so the user doesn't have to remember
     # to do this before starting the node.
-    ros_node = rospy.init_node('tega_teleop', anonymous=True)
+    ros_node = rospy.init_node('jibo_teleop', anonymous=True)
 
     def __init__(self):
         """ Initialize teleop interface """
         # setup GUI teleop interface
         super(tega_teleop, self).__init__()
         self.setGeometry(50, 50, 950, 1500)
-        self.setWindowTitle("Tega Teleop")
+        self.setWindowTitle("Jibo Teleop")
 
         # create layout
         self.central_widget = QtGui.QWidget(self)
