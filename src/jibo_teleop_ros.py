@@ -25,13 +25,12 @@
 
 from PySide import QtGui # basic GUI stuff
 import rospy # ROS
-from r1d1_msgs.msg import TegaAction # ROS msgs to talk to Tega
+from jibo_msgs.msg import JiboAction # ROS msgs to talk to Tega
 from r1d1_msgs.msg import TegaState # ROS msgs to get info from Tega
-from sar_opal_msgs.msg import OpalCommand # ROS msgs to talk to tablet
 from std_msgs.msg import Bool # for child_attention topic
 from std_msgs.msg import Header # standard ROS msg header
 
-class tega_teleop_ros():
+class jibo_teleop_ros():
     # ROS node
 
     def __init__(self, ros_node, ros_label, flags):
@@ -56,58 +55,73 @@ class tega_teleop_ros():
         # We will publish commands to the tablet and commands to the robot.
         # We might send audio to the audio entrainer on its way to the robot.
         # TODO it may be worthwhile to put the topic names in the config file.
-        self.tablet_pub = rospy.Publisher('opal_tablet_command', OpalCommand,
-                queue_size = 10)
-        self.tega_pub = rospy.Publisher('tega', TegaAction, queue_size = 10)
+        # self.tablet_pub = rospy.Publisher('opal_tablet_command', OpalCommand,
+        #         queue_size = 10)
+        self.jibo_pub = rospy.Publisher('jibo', JiboAction, queue_size = 10)
 
 
-    def send_opal_message(self, command):
-        """ Publish opal command message """
-        if self.tablet_pub is not None:
-            print('sending opal command: %s' % command)
-            msg = OpalCommand()
-            # add header
-            msg.header = Header()
-            msg.header.stamp = rospy.Time.now()
-            msg.command = command
-            self.tablet_pub.publish(msg)
-            rospy.loginfo(msg)
+    # def send_opal_message(self, command):
+    #     """ Publish opal command message """
+    #     if self.tablet_pub is not None:
+    #         print('sending opal command: %s' % command)
+    #         msg = OpalCommand()
+    #         # add header
+    #         msg.header = Header()
+    #         msg.header.stamp = rospy.Time.now()
+    #         msg.command = command
+    #         self.tablet_pub.publish(msg)
+    #         rospy.loginfo(msg)
 
     def send_motion_message(self, motion):
-        """ Publish TegaAction do motion message """
-        if self.tega_pub is not None:
+        """ Publish JiboAction do motion message """
+        if self.jibo_pub is not None:
             print('sending motion message: %s' % motion)
-            msg = TegaAction()
+            msg = JiboAction()
             # add header
             msg.header = Header()
             msg.header.stamp = rospy.Time.now()
+            msg.do_motion = True
             msg.motion = motion
-            self.tega_pub.publish(msg)
+            self.jibo_pub.publish(msg)
             rospy.loginfo(msg)
 
     def send_lookat_message(self, lookat):
-        """ Publish TegaAction lookat message """
-        if self.tega_pub is not None:
+        """ Publish JiboAction lookat message """
+        if self.jibo_pub is not None:
             print('sending lookat message: %s' % lookat)
-            msg = TegaAction()
+            msg = JiboAction()
             # add header
             msg.header = Header()
             msg.header.stamp = rospy.Time.now()
-            msg.do_look_at = True
-            msg.look_at = lookat
-            self.tega_pub.publish(msg)
+            msg.do_lookat = True
+            msg.lookat = lookat
+            self.jibo_pub.publish(msg)
+            rospy.loginfo(msg)
+    
+    def send_sound_message(self, speech):
+        """ Publish JiboAction playback audio message """
+        if self.jibo_pub is not None:
+            print('\nsending sound message: %s' % speech)
+            msg = JiboAction()
+            # add header
+            msg.header = Header()
+            msg.header.stamp = rospy.Time.now()
+            msg.do_sound_playback = True
+            msg.audio_filename = speech
+            self.jibo_pub.publish(msg)
             rospy.loginfo(msg)
 
     def send_speech_message(self, speech):
-        """ Publish TegaAction playback audio message """
-        if self.tega_pub is not None:
+        """ Publish JiboAction playback TTS message """
+        if self.jibo_pub is not None:
             print('\nsending speech message: %s' % speech)
-            msg = TegaAction()
+            msg = JiboAction()
             # add header
             msg.header = Header()
             msg.header.stamp = rospy.Time.now()
-            msg.wav_filename = speech
-            self.tega_pub.publish(msg)
+            msg.do_tts = True
+            msg.tts_text = speech
+            self.jibo_pub.publish(msg)
             rospy.loginfo(msg)
 
     def send_fidget_message(self, fidget):

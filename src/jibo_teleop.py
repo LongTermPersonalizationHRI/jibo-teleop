@@ -29,18 +29,15 @@ import sys # exit and argv
 import argparse # command line args
 import rospy # ROS
 from PySide import QtGui, QtCore # basic GUI stuff
-from r1d1_msgs.msg import TegaAction # ROS msgs
-from r1d1_msgs.msg import TegaState # ROS msgs
+from jibo_msgs.msg import JiboAction # ROS msgs
+from jibo_msgs.msg import JiboVec3 # ROS msgs
 
-from sar_opal_msgs.msg import OpalCommand # ROS msgs
-from tega_teleop_ros import tega_teleop_ros
-from tega_animation_ui import tega_animation_ui
-from tega_lookat_ui import tega_lookat_ui
-from tega_speech_ui import tega_speech_ui
-from opal_tablet_ui import opal_tablet_ui
-from tega_fidget_ui import tega_fidget_ui
-from tega_volume_ui import tega_volume_ui
-from tega_teleop_flags import tega_teleop_flags
+from jibo_teleop_ros import jibo_teleop_ros
+from jibo_animation_ui import jibo_animation_ui
+from jibo_lookat_ui import jibo_lookat_ui
+from jibo_speech_ui import jibo_speech_ui
+from jibo_volume_ui import jibo_volume_ui
+from jibo_teleop_flags import jibo_teleop_flags
 from AudioRecorder import AudioRecorder
 
 class tega_teleop(QtGui.QMainWindow):
@@ -51,14 +48,14 @@ class tega_teleop(QtGui.QMainWindow):
     # export to the environment variable $ROS_IP to set the public
     # address of this node, so the user doesn't have to remember
     # to do this before starting the node.
-    ros_node = rospy.init_node('tega_teleop', anonymous=True)
+    ros_node = rospy.init_node('jibo_teleop', anonymous=True)
 
     def __init__(self):
         """ Initialize teleop interface """
         # setup GUI teleop interface
         super(tega_teleop, self).__init__()
         self.setGeometry(50, 50, 950, 1500)
-        self.setWindowTitle("Tega Teleop")
+        self.setWindowTitle("Jibo Teleop")
 
         # create layout
         self.central_widget = QtGui.QWidget(self)
@@ -76,35 +73,35 @@ class tega_teleop(QtGui.QMainWindow):
         # TODO this is a project-specific flag - need to revise how this
         # is done so that project-specific stuff can be swapped out for
         # new projects
-        self.flags = tega_teleop_flags()
+        self.flags = jibo_teleop_flags()
 
         # setup ROS node publisher and subscriber
-        self.ros_teleop = tega_teleop_ros(self.ros_node, self.ros_label,
+        self.ros_teleop = jibo_teleop_ros(self.ros_node, self.ros_label,
                self.flags)
 
         # add animation buttons
-        anim_ui = tega_animation_ui(self.ros_teleop)
+        anim_ui = jibo_animation_ui(self.ros_teleop)
         self.central_layout.addWidget(anim_ui, 0, 0, 4, 10)
 
         # add tablet controls
-        opal_ui = opal_tablet_ui(self.ros_teleop)
-        self.central_layout.addWidget(opal_ui, 4, 0, 2, 3)
+        # opal_ui = opal_tablet_ui(self.ros_teleop)
+        # self.central_layout.addWidget(opal_ui, 4, 0, 2, 3)
 
         # add lookat buttons
-        lookat_ui = tega_lookat_ui(self.ros_teleop)
+        lookat_ui = jibo_lookat_ui(self.ros_teleop)
         self.central_layout.addWidget(lookat_ui, 4, 5, 2, 3)
 
         # Add fidget control buttons.
-        fidget_ui = tega_fidget_ui(self.ros_teleop)
-        self.central_layout.addWidget(fidget_ui, 4, 3, 1, 2)
+        # fidget_ui = tega_fidget_ui(self.ros_teleop)
+        # self.central_layout.addWidget(fidget_ui, 4, 3, 1, 2)
 
         # Add volume controls.
-        volume_ui = tega_volume_ui(self.ros_teleop)
+        volume_ui = jibo_volume_ui(self.ros_teleop)
         self.central_layout.addWidget(volume_ui, 5, 3, 1, 2)
 
         # Add robot script playback buttons (mostly speech, but the scripts
         # can also list animations to play before or after an audio file).
-        speech_ui = tega_speech_ui(self.ros_teleop, self.flags)
+        speech_ui = jibo_speech_ui(self.ros_teleop, self.flags)
         self.central_layout.addWidget(speech_ui, 6, 0, 3, 7)
 
 if __name__ == '__main__':

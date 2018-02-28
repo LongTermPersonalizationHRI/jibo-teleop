@@ -1,3 +1,3 @@
-hello.wav	Hello
-Yay.wav Yay
-ThatsSoSilly.wav	That's silly
+Tell me more	Tell me more
+What happened next?	What happened next?
+wow	wow
