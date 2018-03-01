@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>tega_teleop</name>
+  <name>jibo_teleop</name>
   <version>2.5.2</version>
   <description>An interface to remotely teleoperate the Tega robot</description>
 
