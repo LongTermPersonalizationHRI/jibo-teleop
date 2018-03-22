@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <package>
-  <name>tega_teleop</name>
+  <name>jibo-gfta-speech-collection</name>
   <version>2.5.2</version>
-  <description>An interface to remotely teleoperate the Tega robot</description>
+  <description>An interface to remotely teleoperate the Jibo robot</description>
 
   <maintainer email="jakory@media.mit.edu">jakory</maintainer>
   <license>MIT</license>
-  <url type="website">https://github.com/mitmedialab/tega_teleop</url>
+  <url type="website">https://github.com/mitmedialab/jibo-gfta-speech-collection</url>
   <author email="jakory@media.mit.edu">jakory</author>
 
   <buildtool_depend>catkin</buildtool_depend>
