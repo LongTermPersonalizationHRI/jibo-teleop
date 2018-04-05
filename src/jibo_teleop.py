@@ -40,7 +40,7 @@ from jibo_volume_ui import jibo_volume_ui
 from jibo_teleop_flags import jibo_teleop_flags
 from AudioRecorder import AudioRecorder
 
-class tega_teleop(QtGui.QMainWindow):
+class jibo_teleop(QtGui.QMainWindow):
     """ Tega teleoperation interface """
     # set up ROS node globally
     # TODO if running on network where DNS does not resolve local
@@ -53,7 +53,7 @@ class tega_teleop(QtGui.QMainWindow):
     def __init__(self):
         """ Initialize teleop interface """
         # setup GUI teleop interface
-        super(tega_teleop, self).__init__()
+        super(jibo_teleop, self).__init__()
         self.setGeometry(50, 50, 950, 1500)
         self.setWindowTitle("Jibo Teleop")
 
@@ -83,13 +83,15 @@ class tega_teleop(QtGui.QMainWindow):
         anim_ui = jibo_animation_ui(self.ros_teleop)
         self.central_layout.addWidget(anim_ui, 0, 0, 4, 10)
 
-        # add tablet controls
-        # opal_ui = opal_tablet_ui(self.ros_teleop)
-        # self.central_layout.addWidget(opal_ui, 4, 0, 2, 3)
+        # Add robot script playback buttons (mostly speech, but the scripts
+        # can also list animations to play before or after an audio file).
+        speech_ui = jibo_speech_ui(self.ros_teleop, self.flags)
+        self.central_layout.addWidget(speech_ui, 1, 0, 4, 10)
+
 
         # add lookat buttons
         lookat_ui = jibo_lookat_ui(self.ros_teleop)
-        self.central_layout.addWidget(lookat_ui, 4, 5, 2, 3)
+        self.central_layout.addWidget(lookat_ui, 4, 0, 2, 4)
 
         # Add fidget control buttons.
         # fidget_ui = tega_fidget_ui(self.ros_teleop)
@@ -97,12 +99,9 @@ class tega_teleop(QtGui.QMainWindow):
 
         # Add volume controls.
         volume_ui = jibo_volume_ui(self.ros_teleop)
-        self.central_layout.addWidget(volume_ui, 5, 3, 1, 2)
+        self.central_layout.addWidget(volume_ui, 5, 0, 1, 3)
 
-        # Add robot script playback buttons (mostly speech, but the scripts
-        # can also list animations to play before or after an audio file).
-        speech_ui = jibo_speech_ui(self.ros_teleop, self.flags)
-        self.central_layout.addWidget(speech_ui, 6, 0, 3, 7)
+
 
 if __name__ == '__main__':
 
@@ -123,7 +122,7 @@ if __name__ == '__main__':
 
     # start teleop interface
     try:
-        teleop_window = tega_teleop()
+        teleop_window = jibo_teleop()
         teleop_window.show()
 
     # if roscore isn't running or shuts down unexpectedly

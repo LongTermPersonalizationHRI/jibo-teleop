@@ -25,6 +25,7 @@
 
 from PySide import QtGui # basic GUI stuff
 from jibo_teleop_ros import jibo_teleop_ros
+from AudioRecorder import AudioRecorder
 import json
 import glob
 from functools import partial
@@ -59,7 +60,7 @@ class jibo_speech_ui(QtGui.QWidget):
         # put buttons in a box
         self.speech_box = QtGui.QGroupBox(self)
         self.speech_layout = QtGui.QGridLayout(self.speech_box)
-        self.speech_box.setTitle("Speech")
+        self.speech_box.setTitle("Scripts")
 
         # get speech and add speech playback buttons to layout:
 
@@ -92,6 +93,14 @@ class jibo_speech_ui(QtGui.QWidget):
         self.label.setText("---")
         self.speech_layout.addWidget(self.label, 2, 0, 1, 3)
 
+        self.record_button = QtGui.QPushButton("Start Recording",self.speech_box)
+        self.record_button.setStyleSheet('QPushButton {color: green;}')
+        self.record_button.clicked.connect(self.on_start_record)
+
+        self.speech_layout.addWidget(self.record_button, 2, 1, 1, 1)
+        self.audio_recorder = AudioRecorder()
+
+
         json_data=[]
 
         # read config file to get script name and number of speech options
@@ -103,17 +112,19 @@ class jibo_speech_ui(QtGui.QWidget):
                 json_data = json.load(json_file)
             print ("Config file says: ")
             print (json_data)
-            if ("options" in json_data):
-                self.options = json_data["options"]
-            else:
-                self.options = 1
-                print ("Could not read number of options! Set to default of 1.")
-            self.audio_base_dir = ""
-            if ("audio_base_dir" in json_data):
-                self.audio_base_dir = json_data["audio_base_dir"]
-            self.viseme_base_dir = ""
-            if ("viseme_base_dir" in json_data):
-                self.viseme_base_dir = json_data["viseme_base_dir"]
+
+            # hard-coded option number DEPRECATED for GFTA
+            # if ("options" in json_data):
+            #     self.options = json_data["options"]
+            # else:
+            #     self.options = 1
+            #     print ("Could not read number of options! Set to default of 1.")
+            # self.audio_base_dir = ""
+            # if ("audio_base_dir" in json_data):
+            #     self.audio_base_dir = json_data["audio_base_dir"]
+            # self.viseme_base_dir = ""
+            # if ("viseme_base_dir" in json_data):
+            #     self.viseme_base_dir = json_data["viseme_base_dir"]
         except:
             print ("Could not read your json config file! Is it valid json?")
             pass
@@ -126,7 +137,7 @@ class jibo_speech_ui(QtGui.QWidget):
         script_box_label.setText("Pick a script to load: ")
         self.speech_layout.addWidget(script_box_label, 0, 0)
         self.script_list_box = QtGui.QComboBox(self)
-        script_file_list = glob.glob('../scripts/*.txt')
+        script_file_list = glob.glob('../scripts/*.json')
         self.script_list_box.addItems(script_file_list)
         self.script_list_box.activated['QString'].connect(self.load_script)
         self.speech_layout.addWidget(self.script_list_box, 0, 1, 1, 2)
@@ -134,7 +145,7 @@ class jibo_speech_ui(QtGui.QWidget):
         # make a dropdown list of available static scripts to load
         # user picks one, it loads
         self.static_script_list_box = QtGui.QComboBox(self)
-        static_script_file_list = glob.glob('../static_scripts/*.txt')
+        static_script_file_list = glob.glob('../static_scripts/*.json')
         self.static_script_list_box.addItems(static_script_file_list)
         self.static_script_list_box.activated['QString'].connect(
                self.load_static_script)
@@ -157,20 +168,43 @@ class jibo_speech_ui(QtGui.QWidget):
             print("Should there be a static script in your config file?")
 
 
+    def on_start_record(self):
+
+        print("Start Recording")
+        self.record_button.clicked.disconnect()
+        self.record_button.setText('Stop Recording')
+        self.record_button.setStyleSheet('QPushButton {color: red;}')
+        self.record_button.clicked.connect(self.on_stop_record)
+        self.audio_recorder.start_recording('test.wav')
+
+
+    def on_stop_record(self):
+
+        print("Stop Recording")
+        self.record_button.clicked.disconnect()
+        self.record_button.setText('Start Recording')
+        self.record_button.setStyleSheet('QPushButton {color: green;}')
+        self.record_button.clicked.connect(self.on_start_record)
+        self.audio_recorder.stop_recording('test.wav')
+
+
+
+
     def load_script(self, script_filename):
         ''' load a script file '''
         print("loading script...")
+
         try:
             # reset list holding the script lines
             self.script_list = []
             # read in script
             script_file = open(script_filename)
             for line in script_file:
-                self.script_list.append(line.strip().split("\t"))
+                self.script_list.append(json.loads(line)) # each line is a list of lists represented as a json object
             script_file.close()
 
             # start script line counter
-            self.current_line = 0
+            self.current_line_index = 0
 
             # set up the number of option buttons specified in config:
             # where we are putting these buttons in the grid
@@ -188,23 +222,38 @@ class jibo_speech_ui(QtGui.QWidget):
 
             # make new array of buttons for the number of speech options
             # that this new script to load has
-            self.buttons = [None] * self.options
+
+
+            self.buttons = [None] * len(self.script_list[self.current_line_index])
+
+            n_prompts = len(self.script_list[self.current_line_index]) # number of prompts in first line of script
 
             # each script line follows the pattern:
-            # filename1 label1 filename2 label2 ... etc.
-            for i in range(0, self.options):
-                # set button text to the button label
-                self.buttons[i] = QtGui.QPushButton(self.script_list[
-                self.current_line][i*2+1] if i < len(self.script_list[
-                    self.current_line])/2 else "-", self.speech_box)
-                # when clicked, call send_speech_command with the argument
+            # [[anim1.keys, audio1.wav, tts1, label1], [anim2.keys, audio2.wav, tts2, label2]] ... etc.  
+
+            for i in range(0, n_prompts):
+                print(i)
+
+
+                # extract anim, audio, tts, and label from payload
+                payload = self.script_list[self.current_line_index][i]
+                curr_anim = payload[0]
+                curr_audio = payload[1]
+                curr_tts = payload[2]
+                curr_label = payload[3]
+
+                self.buttons[i] = QtGui.QPushButton(curr_label, self.speech_box)
+
+
+                # when clicked, call send_script_command with the argument
                 # that is the filename for the audio to play
+
                 # note: the speech option may be a comma separated list
                 # where one item is the filename and one is an animation to
                 # play back before or after the file
-                self.buttons[i].clicked.connect(partial(self.send_speech_command,
-                    self.script_list[self.current_line][i*2] if i < len(
-                        self.script_list[self.current_line])/2 else "-", i))
+
+                self.buttons[i].clicked.connect(partial(self.send_script_command, payload, i))
+
                 # add button to layout, each button takes up three columns
                 self.speech_layout.addWidget(self.buttons[i], row, 0, 1, 3)
                 col += 2
@@ -220,7 +269,22 @@ class jibo_speech_ui(QtGui.QWidget):
 
     def load_static_script(self, script_filename):
         ''' load a script file '''
-         # remove old buttons if there were any
+        #try:
+        # reset list holding the script lines
+        self.static_script_list = []
+        # read in script
+        static_script = open(script_filename)
+        for line in static_script:
+            self.static_script_list.append(json.loads(line)) # each line is a list of lists represented as a json object
+        static_script.close()
+
+        # start script line counter
+        self.current_line_index = 0
+
+        # set up the number of option buttons specified in config:
+        # where we are putting these buttons in the grid
+        row = 4
+
         try:
             for b in self.static_buttons:
                 self.speech_layout.removeWidget(b)
@@ -232,25 +296,46 @@ class jibo_speech_ui(QtGui.QWidget):
         # make new list of buttons for the static script options
         self.static_buttons = []
 
-        try:
-            row = 4
-            static_script = open(script_filename)
+        # make new array of buttons for the number of speech options
+        # that this new script to load has
 
-            for line in static_script:
-                parts = line.rstrip().split("\t")
-                # set button text to the button label if a label was provided
-                button = QtGui.QPushButton(parts[1] if len(
-                    parts) > 1 else parts[0], self.speech_box)
-                # send filename of audio to play when button is clicked
-                button.clicked.connect(partial(self.send_speech_command,
-                    parts[0].split(",")[0], -1))
-                # make button text purple so they are distinct
-                button.setStyleSheet('QPushButton {color: purple;}')
-                self.speech_layout.addWidget(button, row, 3, 1, 2)
-                self.static_buttons.append(button)
-                row += 1
-        except:
-            print ("Could not read static script file! Is filename correct?")
+
+        self.static_buttons = [None] * len(self.static_script_list)
+
+        n_prompts = len(self.static_script_list) # number of prompts in first line of script
+
+        # each script line follows the pattern:
+        # [[anim1.keys, audio1.wav, tts1, label1], [anim2.keys, audio2.wav, tts2, label2]] ... etc.  
+
+        for i in range(0, n_prompts):
+            print(i)
+
+
+            # extract anim, audio, tts, and label from payload
+            payload = self.static_script_list[i][0]
+            curr_anim = payload[0]
+            curr_audio = payload[1]
+            curr_tts = payload[2]
+            curr_label = payload[3]
+
+            self.static_buttons[i] = QtGui.QPushButton(curr_label, self.speech_box)
+
+
+            # when clicked, call send_script_command with the argument
+            # that is the filename for the audio to play
+
+            self.static_buttons[i].clicked.connect(partial(self.send_script_command, payload, 1)) #always send 1 as option number so that we dont advance the script
+            # make button text purple so they are distinct
+            self.static_buttons[i].setStyleSheet('QPushButton {color: purple;}')
+
+
+            # add button to layout, each button takes up three columns
+            self.speech_layout.addWidget(self.static_buttons[i], row, 3, 1, 2)
+            #self.static_buttons.append(button)
+            row += 1
+        #except:
+        #    print ("Could not read static script file! Is filename correct?")
+        #    self.label.setText("Could not read static script file!")
 
 
     def toggle_pause(self):
@@ -268,14 +353,14 @@ class jibo_speech_ui(QtGui.QWidget):
 
     def trigger_script_beginning(self):
         ''' go to beginning of script '''
-        self.current_line = 0
+        self.current_line_index = 0
         self.update_speech_options()
         self.label.setText("At beginning of script.")
 
 
     def trigger_script_end(self):
         ''' go to end of script '''
-        self.current_line = len(self.script_list) - 1
+        self.current_line_index = len(self.script_list) - 1
         self.update_speech_options()
         self.label.setText("At end of script.")
 
@@ -288,11 +373,11 @@ class jibo_speech_ui(QtGui.QWidget):
             self.label.setText("Cannot go back! Script paused.")
             return
 
-        if (self.current_line <= 0):
+        if (self.current_line_index <= 0):
             self.label.setText("Cannot go back! At beginning.")
             return
 
-        self.current_line -= 1
+        self.current_line_index -= 1
         self.update_speech_options()
 
 
@@ -304,80 +389,99 @@ class jibo_speech_ui(QtGui.QWidget):
             self.label.setText("Cannot go forward! Script paused.")
             return
 
-        if (self.current_line >= len(self.script_list) - 1):
+        if (self.current_line_index >= len(self.script_list) - 1):
             self.label.setText("Cannot go forward! At end.")
             return
 
-        self.current_line += 1
+        self.current_line_index += 1
         self.update_speech_options()
 
 
     def update_speech_options(self):
         ''' update speech option buttons to go forward or back in script '''
-        for i in range(0, self.options):
-            # set button text to the button label
-            # if there are more buttons than speech options for this line in
-            # the script, then set the text to "-"
-            self.buttons[i].setText(self.script_list[self.current_line][
-                i*2+1] if i < len(self.script_list[self.current_line])/2 else "-")
-            # disconnect previous callback function
-            try:
-                self.buttons[i].clicked.disconnect()
-            except:
-                print("oops, tried to disconnect a button that wasn't connected")
-            # when clicked, call send_speech_command with the argument
-            # that is the filename for the audio to play
-            # if there are more buttons than speech options for this line in
-            # the script, then send a "-" when clicked instead
-            self.buttons[i].clicked.connect(partial(self.send_speech_command,
-                self.script_list[self.current_line][i*2] if i < len(
-                    self.script_list[self.current_line])/2 else "-", i))
-            self.label.setText("Next speech.")
+
+       # remove old buttons if there were any
+        try:
+            for b in self.buttons:
+                self.speech_layout.removeWidget(b)
+                b.deleteLater()
+                b = None
+        except AttributeError:
+            print("No buttons to delete!")
+
+        try:
+            self.buttons[i].clicked.disconnect()
+        except:
+            print("oops, tried to disconnect a button that wasn't connected")
+
+        n_prompts = len(self.script_list[self.current_line_index]) # number of prompts in first line of script
+
+        # each script line follows the pattern:
+        # [[anim1.keys, audio1.wav, tts1, label1], [anim2.keys, audio2.wav, tts2, label2]] ... etc.  
+
+        # reassign buttons
+        self.buttons = [None] * len(self.script_list[self.current_line_index])
 
 
-    def send_speech_command(self, speech, option_num):
+        # set up the number of option buttons specified in config:
+        # where we are putting these buttons in the grid
+        col = 0
+        row = 4
+
+
+        for i in range(0, n_prompts):
+            print(i)
+
+            # extract anim, audio, tts, and label from payload
+            payload = self.script_list[self.current_line_index][i]
+            curr_anim = payload[0]
+            curr_audio = payload[1]
+            curr_tts = payload[2]
+            curr_label = payload[3]
+            print(payload)
+
+            
+            self.buttons[i] = QtGui.QPushButton(curr_label, self.speech_box)
+            self.buttons[i].clicked.connect(partial(self.send_script_command, payload, i))
+            # add button to layout, each button takes up three columns
+            self.speech_layout.addWidget(self.buttons[i], row, 0, 1, 3)
+            col += 2
+            row += 1
+
+        self.buttons[0].setStyleSheet('QPushButton {color: green;}')
+        self.label.setText("Next speech.")
+
+
+
+    def send_script_command(self, payload, option_num):
         ''' send speech command to robot and update speech options if necessary '''
-        if (speech != "-"):
-            # split command on commas, find out if there's just speech or
-            # animations listed
-            speech_parts = speech.split(",")
+       
+        anim = payload[0]
+        audio = payload[1]
+        tts = payload[2]
+        label = payload[3]
 
-            # send a command for each part found
-            for sp in speech_parts:
-                # wait until tega is not speaking or moving, then send the
-                # next command
-                while (self.flags.jibo_is_playing_sound
-                       or self.flags.jibo_is_doing_motion):
-                    time.sleep(0.1)
+        # wait until robot is not speaking or moving, then send the command
+        while (self.flags.jibo_is_playing_sound or self.flags.jibo_is_doing_motion):
+            time.sleep(0.1)
 
-                # # If this part says "CHILD_TURN", set the interaction state and
-                # # if we are using the audio entrainment module, send a message
-                # # indicating that it is the child's turn to speak.
-                # if sp == "PARTICIPANT_TURN":
-                #     self.ros_node.send_interaction_state_message(True)
-                #     self.label.setText("Sending child turn message.")
+        # if there is an animation (ends in .keys), send a motion command
+        if (anim.endswith('.keys')):
+            self.ros_node.send_motion_message(anim)
+            self.label.setText("Sending animation.")
+            self.wait_for_motion()
+        
+        # if there is a sound file (ends in .wav), send a sound command
+        if (audio.endswith('.wav') or audio.endswith('.m4a')):
+            self.ros_node.send_sound_message(audio)
+            self.label.setText("Sending audio message.")
+            self.wait_for_speaking()
 
-                # if this part is an animation (ends in .keys), send a motion command
-                if (sp.endswith('.keys')):
-                    self.ros_node.send_motion_message(sp)
-                    self.label.setText("Sending animation.")
-                    self.wait_for_motion()
+        if not tts == '':
+            self.ros_node.send_tts_message(tts)
+            self.label.setText("Sending TTS message.")
+            self.wait_for_speaking()
                 
-                # if this part is a sound file (ends in .wav), send a sound command
-                elif (sp.endswith('.wav') or sp.endswith('.m4a')):
-                    self.ros_node.send_sound_message(sp)
-                    self.label.setText("Sending sound message.")
-                    self.wait_for_motion()
-
-                # Otherwise, it's a speech filename, send
-                # to the robot using ROS.
-                else:
-                    # Send directly to the robot.
-                    self.ros_node.send_speech_message(sp)
-                    self.label.setText("Sending speech command.")
-                    self.wait_for_speaking()
-
-        speech = "-"
         # if first option and not paused, autoadvance, call trigger script forward
         if (option_num == 0 and not self.paused):
             self.trigger_script_forward()
@@ -399,13 +503,13 @@ class jibo_speech_ui(QtGui.QWidget):
         # since the last time we changed the button colors or sent speech, and
         # use that to determine whether we should suggest playing another
         # redirect or not.
-        print(self.flags.child_is_attending)
-        if self.flags.child_is_attending:
-            for sb in self.static_buttons:
-                sb.setStyleSheet('QPushButton {color: purple;}')
-        else:
-            for sb in self.static_buttons:
-                sb.setStyleSheet('QPushButton {color: red;}')
+        # print(self.flags.child_is_attending)
+        # if self.flags.child_is_attending:
+        #     for sb in self.static_buttons:
+        #         sb.setStyleSheet('QPushButton {color: purple;}')
+        # else:
+        #     for sb in self.static_buttons:
+        #         sb.setStyleSheet('QPushButton {color: red;}')
 
     def on_speaker_age_changed(self, val):
         """ When the speaker age value is changed in the spin box, update the
