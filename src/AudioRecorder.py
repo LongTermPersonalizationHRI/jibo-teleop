@@ -12,12 +12,14 @@ import time
 import wave
 import math
 import pyaudio
+import sys
 from six.moves import queue
 
 import rospy
 from r1d1_msgs.msg import AndroidAudio
 
 USE_USB_MIC = True
+MAX_BUFFER_SIZE_BEFORE_DISCARD = 590 # If buffer exceeds 50M and we aren't recording, dump and start over
 
 
 class AudioRecorder:
@@ -30,8 +32,9 @@ class AudioRecorder:
     CHANNELS = 1
     RATE = 48000
 
-    CHUNK = 16000
-    EXTERNAL_MIC_NAME = 'USB audio CODEC: Audio (hw:1,0)'
+    CHUNK = 512 #16000
+    #EXTERNAL_MIC_NAME = 'USB audio CODEC: Audio (hw:1,0)'
+    EXTERNAL_MIC_NAME = 'Ensoniq AudioPCI: ES1371 DAC2/ADC (hw:0,0)'
 
 
     def __init__(self):
@@ -65,6 +68,7 @@ class AudioRecorder:
 
             #print(audio.get_device_info_by_host_api_device_index(0, i).get('name'))
             if (audio.get_device_info_by_host_api_device_index(0, i).get('maxInputChannels')) > 0:
+                print(audio.get_device_info_by_host_api_device_index(0, i).get('name'))
                 if audio.get_device_info_by_host_api_device_index(0, i).get('name') == self.EXTERNAL_MIC_NAME:
                     mic_index = i
                     break
@@ -85,9 +89,18 @@ class AudioRecorder:
             print(self.RATE)
             print(self.CHUNK)
 
-            #TODO: publish on ros topic for bagging?
-            while(not self.is_recording): 
-                data = self.stream.read(self.CHUNK, exception_on_overflow=False) #just read data off the stream so it doesnt overflow
+            # Constantly add to buffered audio data stream 
+            #TODO: publish on ros topic for bagging? 
+            while(True):
+                data = self.stream.read(self.CHUNK, exception_on_overflow=False)
+                self.buffered_audio_data.append(data)
+                #print(sys.getsizeof(self.buffered_audio_data))
+
+                if (sys.getsizeof(self.buffered_audio_data) > MAX_BUFFER_SIZE_BEFORE_DISCARD) and not self.is_recording:
+                    self.buffered_audio_data = []
+
+
+
 
     def record_usb_audio(self):
 
@@ -107,13 +120,16 @@ class AudioRecorder:
         """
         Starts a new thread that records the microphone audio.
         """
-        self.is_recording = True
+        time.sleep(.8) #half second delay
+
         self.buffered_audio_data = []  # Resets audio data
+        self.is_recording = True
+
         self.start_recording_time = time.time()
 
-        if self.valid_recording:
+        #if self.valid_recording:
 
-            thread.start_new_thread(self.record_usb_audio, ())
+        #    thread.start_new_thread(self.record_usb_audio, ())
 
 
             
@@ -124,7 +140,7 @@ class AudioRecorder:
         ends the recording and makes the data into
         a wav file.
         """
-        time.sleep(.5) #half second delay
+        time.sleep(1) #one second delay
         self.is_recording = False  # Ends the recording
 
 

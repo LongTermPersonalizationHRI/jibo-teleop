@@ -178,6 +178,7 @@ class jibo_speech_ui(QtGui.QWidget):
         self.audio_recorder.start_recording('test.wav')
 
 
+
     def on_stop_record(self):
 
         print("Stop Recording")

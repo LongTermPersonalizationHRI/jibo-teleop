@@ -23,7 +23,7 @@ bool do_volume
 float32 volume
 
 bool do_anim_transition
-int8 anim_transition
+int8 anim_transition # send ANIMTRANS_KEEP_LASTFRAME to have the last frame of an animation stay on Jibo's eye after playback finishes, 0 to reset 
 
 #
 # TTS Options

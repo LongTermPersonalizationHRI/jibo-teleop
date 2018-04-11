@@ -119,6 +119,19 @@ class jibo_teleop_ros():
             self.jibo_pub.publish(msg)
             rospy.loginfo(msg)
 
+    def send_anim_transition_message(self, anim_transition):
+        """ Publish JiboAction message that switches between animation playback modes. """
+        if self.jibo_pub is not None:
+            print('\nsending anim transition message: %s' % anim_transition)
+            msg = JiboAction()
+            # add header
+            msg.header = Header()
+            msg.header.stamp = rospy.Time.now()
+            msg.do_anim_transition = True
+            msg.anim_transition = anim_transition
+            self.jibo_pub.publish(msg)
+            rospy.loginfo(msg)
+
     def on_child_attn_msg(self, data):
         # when we get child attention messages, set a label to say whether the
         # child is attending or not, and also set a flag
