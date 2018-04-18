@@ -144,7 +144,7 @@ class AudioRecorder:
         self.is_recording = False  # Ends the recording
 
 
-        wav_file = wave.open('test.wav', 'wb')
+        wav_file = wave.open(audio_filename, 'wb')
         wav_file.setnchannels(AudioRecorder.CHANNELS)
         wav_file.setsampwidth(2)
         wav_file.setframerate(AudioRecorder.RATE)

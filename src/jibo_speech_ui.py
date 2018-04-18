@@ -31,6 +31,8 @@ import glob
 from functools import partial
 import time
 
+RECORDING_PATH = '../recordings/'
+
 class jibo_speech_ui(QtGui.QWidget):
 
 
@@ -99,6 +101,9 @@ class jibo_speech_ui(QtGui.QWidget):
 
         self.speech_layout.addWidget(self.record_button, 2, 1, 1, 1)
         self.audio_recorder = AudioRecorder()
+
+        # stores the label of the last script button to be pressed
+        self.last_clicked_prompt = "test"
 
 
         json_data=[]
@@ -175,7 +180,7 @@ class jibo_speech_ui(QtGui.QWidget):
         self.record_button.setText('Stop Recording')
         self.record_button.setStyleSheet('QPushButton {color: red;}')
         self.record_button.clicked.connect(self.on_stop_record)
-        self.audio_recorder.start_recording('test.wav')
+        self.audio_recorder.start_recording(RECORDING_PATH + self.last_clicked_prompt + '.wav')
 
 
 
@@ -186,7 +191,7 @@ class jibo_speech_ui(QtGui.QWidget):
         self.record_button.setText('Start Recording')
         self.record_button.setStyleSheet('QPushButton {color: green;}')
         self.record_button.clicked.connect(self.on_start_record)
-        self.audio_recorder.stop_recording('test.wav')
+        self.audio_recorder.stop_recording(RECORDING_PATH + self.last_clicked_prompt + '.wav')
 
 
 
@@ -482,7 +487,9 @@ class jibo_speech_ui(QtGui.QWidget):
             self.ros_node.send_tts_message(tts)
             self.label.setText("Sending TTS message.")
             self.wait_for_speaking()
-                
+        
+        self.last_clicked_prompt = label
+        print("UPDATED LAST CLICKED PROMPT TO " + self.last_clicked_prompt)
         # if first option and not paused, autoadvance, call trigger script forward
         if (option_num == 0 and not self.paused):
             self.trigger_script_forward()

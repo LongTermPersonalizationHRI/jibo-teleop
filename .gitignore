@@ -77,3 +77,6 @@ src/*.txt
 !src/tega_teleop_config.example.json
 !src/example_script.txt
 !src/example_static_script.txt
+
+#recordings
+recordings/*.wav
