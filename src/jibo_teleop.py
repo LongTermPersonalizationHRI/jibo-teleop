@@ -115,8 +115,8 @@ if __name__ == '__main__':
             device. Support the ability to load custom scripts for robot behavior.
             ''')
 
-    parser.add_argument('pid', type=str, nargs=1, help='the participant ID for a given session')
-    parser.add_argument('experimenter', type=str, nargs=1, help='the participant ID for a given session')
+    parser.add_argument('pid', type=str, nargs='?', default='p00', help='the participant ID for a given session')
+    parser.add_argument('experimenter', type=str, nargs='?', default='jibo', help='the participant ID for a given session')
 
     # Get arguments.
     args = parser.parse_args()
@@ -128,7 +128,7 @@ if __name__ == '__main__':
 
     # start teleop interface
     try:
-        teleop_window = jibo_teleop(args.pid[0], args.experimenter[0])
+        teleop_window = jibo_teleop(args.pid, args.experimenter)
         teleop_window.show()
 
     # if roscore isn't running or shuts down unexpectedly
