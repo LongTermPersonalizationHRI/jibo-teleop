@@ -26,6 +26,7 @@
 from PySide import QtGui # basic GUI stuff
 import rospy # ROS
 from jibo_msgs.msg import JiboAction # ROS msgs to talk to Tega
+from jibo_msgs.msg import JiboVec3 # ROS msgs to talk to Tega
 from r1d1_msgs.msg import TegaState # ROS msgs to get info from Tega
 from std_msgs.msg import Bool # for child_attention topic
 from std_msgs.msg import Header # standard ROS msg header
@@ -129,6 +130,19 @@ class jibo_teleop_ros():
             msg.header.stamp = rospy.Time.now()
             msg.do_anim_transition = True
             msg.anim_transition = anim_transition
+            self.jibo_pub.publish(msg)
+            rospy.loginfo(msg)
+
+    def send_led_message(self, red_val, green_val, blue_val):
+        """ Publish JiboAction message that switches between animation playback modes. """
+        if self.jibo_pub is not None:
+            print('\nsending rgb_val message: %s' % str(red_val) + ',' + str(green_val) + ',' + str(blue_val))
+            msg = JiboAction()
+            # add header
+            msg.header = Header()
+            msg.header.stamp = rospy.Time.now()
+            msg.do_led = True
+            msg.led_color = JiboVec3(red_val, green_val, blue_val)
             self.jibo_pub.publish(msg)
             rospy.loginfo(msg)
 

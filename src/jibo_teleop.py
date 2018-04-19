@@ -50,7 +50,7 @@ class jibo_teleop(QtGui.QMainWindow):
     # to do this before starting the node.
     ros_node = rospy.init_node('jibo_teleop', anonymous=True)
 
-    def __init__(self):
+    def __init__(self, pid='test_user', experimenter='jibo'):
         """ Initialize teleop interface """
         # setup GUI teleop interface
         super(jibo_teleop, self).__init__()
@@ -85,7 +85,7 @@ class jibo_teleop(QtGui.QMainWindow):
 
         # Add robot script playback buttons (mostly speech, but the scripts
         # can also list animations to play before or after an audio file).
-        speech_ui = jibo_speech_ui(self.ros_teleop, self.flags)
+        speech_ui = jibo_speech_ui(self.ros_teleop, self.flags, pid, experimenter)
         self.central_layout.addWidget(speech_ui, 1, 0, 4, 10)
 
 
@@ -105,6 +105,8 @@ class jibo_teleop(QtGui.QMainWindow):
 
 if __name__ == '__main__':
 
+    print('hello')
+
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description='''Send commands to a Jibo robot. Creates
@@ -113,16 +115,20 @@ if __name__ == '__main__':
             device. Support the ability to load custom scripts for robot behavior.
             ''')
 
+    parser.add_argument('pid', type=str, nargs=1, help='the participant ID for a given session')
+    parser.add_argument('experimenter', type=str, nargs=1, help='the participant ID for a given session')
+
     # Get arguments.
     args = parser.parse_args()
+    print("ARGS WERE")
     print(args)
 
     # initialize top-level GUI manager
-    app = QtGui.QApplication(sys.argv)
+    app = QtGui.QApplication(sys.argv[0])
 
     # start teleop interface
     try:
-        teleop_window = jibo_teleop()
+        teleop_window = jibo_teleop(args.pid[0], args.experimenter[0])
         teleop_window.show()
 
     # if roscore isn't running or shuts down unexpectedly

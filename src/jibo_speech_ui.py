@@ -31,12 +31,12 @@ import glob
 from functools import partial
 import time
 
-RECORDING_PATH = '../recordings/'
+RECORDING_PATH = './recordings/'
 
 class jibo_speech_ui(QtGui.QWidget):
 
 
-    def __init__(self, ros_node, flags):
+    def __init__(self, ros_node, flags, pid, experimenter):
         """ Make controls to trigger speech playback """
         super(jibo_speech_ui, self).__init__()
         # get reference to ros node so we can do callbacks to publish
@@ -58,6 +58,12 @@ class jibo_speech_ui(QtGui.QWidget):
         # get reference to shared flags, such as whether child is attending
         # or not
         self.flags = flags
+
+        # get reference to a pid passed in from the main teleop class, used for determining recording path
+        self.pid = pid
+
+        # get a reference to the experimenter operating the teleop, used for determining recording path
+        self.experimenter = experimenter 
 
         # put buttons in a box
         self.speech_box = QtGui.QGroupBox(self)
@@ -113,7 +119,7 @@ class jibo_speech_ui(QtGui.QWidget):
         # NOTE move config parsing to main jibo_teleop.py and pass script name
         # and number of options if we add anything not script/speech-related.
         try:
-            with open("jibo_teleop_config.json") as json_file:
+            with open("src/jibo_teleop_config.json") as json_file:
                 json_data = json.load(json_file)
             print ("Config file says: ")
             print (json_data)
@@ -142,7 +148,7 @@ class jibo_speech_ui(QtGui.QWidget):
         script_box_label.setText("Pick a script to load: ")
         self.speech_layout.addWidget(script_box_label, 0, 0)
         self.script_list_box = QtGui.QComboBox(self)
-        script_file_list = glob.glob('../scripts/*.json')
+        script_file_list = glob.glob('./scripts/*.json')
         self.script_list_box.addItems(script_file_list)
         self.script_list_box.activated['QString'].connect(self.load_script)
         self.speech_layout.addWidget(self.script_list_box, 0, 1, 1, 2)
@@ -150,7 +156,7 @@ class jibo_speech_ui(QtGui.QWidget):
         # make a dropdown list of available static scripts to load
         # user picks one, it loads
         self.static_script_list_box = QtGui.QComboBox(self)
-        static_script_file_list = glob.glob('../static_scripts/*.json')
+        static_script_file_list = glob.glob('./static_scripts/*.json')
         self.static_script_list_box.addItems(static_script_file_list)
         self.static_script_list_box.activated['QString'].connect(
                self.load_static_script)
@@ -180,7 +186,8 @@ class jibo_speech_ui(QtGui.QWidget):
         self.record_button.setText('Stop Recording')
         self.record_button.setStyleSheet('QPushButton {color: red;}')
         self.record_button.clicked.connect(self.on_stop_record)
-        self.audio_recorder.start_recording(RECORDING_PATH + self.last_clicked_prompt + '.wav')
+        self.audio_recorder.start_recording(RECORDING_PATH + self.pid + '_' + self.experimenter + '_' + self.last_clicked_prompt + '.wav')
+        self.ros_node.send_led_message(45, 100, 245) #set LED to light blue
 
 
 
@@ -191,7 +198,8 @@ class jibo_speech_ui(QtGui.QWidget):
         self.record_button.setText('Start Recording')
         self.record_button.setStyleSheet('QPushButton {color: green;}')
         self.record_button.clicked.connect(self.on_start_record)
-        self.audio_recorder.stop_recording(RECORDING_PATH + self.last_clicked_prompt + '.wav')
+        self.audio_recorder.stop_recording(RECORDING_PATH + self.pid + '_' + self.experimenter + '_' + self.last_clicked_prompt + '.wav')
+        self.ros_node.send_led_message(0, 0, 0) #turn off LED
 
 
 
