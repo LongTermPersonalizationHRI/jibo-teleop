@@ -1,0 +1,8 @@
+[, narrative_instruction.wav, INSTRUCTIONS]
+[narr_01_in.keys, , IN_NARR1]
+[narr_01_out.keys, , OUT_NARR1]	[, brushing_teeth1.wav, NARR1_PROMPT1]	[, brushing_teeth2.wav, NARR1_PROMPT2]	[, brushing_teeth3.wav, NARR1_PROMPT3]	[, brushing_teeth4.wav, NARR1_PROMPT4]	[, anything_else.wav, ANYTHING_ELSE]
+[narr_02_in.keys, movie1.wav, IN_NARR2]
+[, movie2.wav, NARR2_PROMPT2]	[, movie3.wav, NARR2_PROMPT3]	[, movie4.wav, NARR2_PROMPT4]	[, anything_else.wav, ANYTHING_ELSE]
+[narr_moana_in.keys, movie5.wav, MOANA_IN]	[narr_moana_out.keys, , MOANA_OUT]	[narr_frozen_in.keys, movie6.wav, FROZEN_IN]	[narr_frozen_out.keys, , FROZEN_OUT]
+[narr_lionking_in.keys, movie7.wav, LIONKING_IN]	[narr_lionking_out.keys, , LIONKING_OUT]	[narr_toystory_in.keys, movie8.wav, TOYSTORY_IN]	[narr_toystory_out.keys, , TOYSTORY_OUT]
+[narr_minions_in.keys, movie9.wav, MINIONS_IN]	[narr_minions_out.keys, , MINIONS_OUT]	[narr_lego_in.keys, movie10.wav, LEGO_IN]	[narr_lego_out.keys, , LEGO_OUT]

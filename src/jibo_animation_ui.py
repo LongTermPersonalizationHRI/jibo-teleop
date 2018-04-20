@@ -46,6 +46,8 @@ class jibo_animation_ui(QtGui.QWidget):
         # get reference to ros node so we can do callbacks to publish messages
         self.ros_node = ros_node
 
+        self.hold_last_frame = False #tracks state of whether jibo will hold last frame of animation or not. False by default
+
         # put buttons in a box
         anim_box = QtGui.QGroupBox(self)
         anim_layout = QtGui.QGridLayout(anim_box)
@@ -68,3 +70,39 @@ class jibo_animation_ui(QtGui.QWidget):
             if(col >= 4): # ten animation buttons per row
                 col = 0
                 row += 1
+
+        #set button to toggle Hold Last Frame
+        row += 1
+
+        self.anim_trans_button = QtGui.QPushButton("Turn Hold-Last-Frame ON",anim_box)
+        self.anim_trans_button.setStyleSheet('QPushButton {color: green;}')
+        self.anim_trans_button.clicked.connect(self.on_hold_last_frame_pressed)
+
+        anim_layout.addWidget(self.anim_trans_button, row, 0)
+
+
+    def on_hold_last_frame_pressed(self):
+
+        if self.hold_last_frame: #we are switching to False state, so the next button press should take us back to TRUE
+
+            self.anim_trans_button.setText('"Turn Hold-Last-Frame ON')
+            self.anim_trans_button.setStyleSheet('QPushButton {color: green;}')
+
+            self.ros_node.send_anim_transition_message(JiboAction.ANIMTRANS_RESET)
+
+
+        else:
+            self.anim_trans_button.setText('"Turn Hold-Last-Frame OFF')
+            self.anim_trans_button.setStyleSheet('QPushButton {color: red;}')
+            self.ros_node.send_anim_transition_message(JiboAction.ANIMTRANS_KEEP_LASTFRAME)
+
+
+        self.hold_last_frame = not self.hold_last_frame #flip state to reflect button press
+
+
+    def on_stop_record(self):
+
+        print("Stop Recording")
+        self.record_button.clicked.disconnect()
+        
+        self.record_button.clicked.connect(self.on_start_record)

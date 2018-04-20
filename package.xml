@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <package>
   <name>jibo_teleop</name>
-  <version>2.5.2</version>
-  <description>An interface to remotely teleoperate the Jibo robot</description>
+  <version>2.0.0</version>
+  <description>An interface to remotely teleoperate the Jibo robot and custom action messages for Jibo robot communication</description>
 
-  <maintainer email="jakory@media.mit.edu">jakory</maintainer>
+  <maintainer email="samuelsp@media.mit.edu">jakory</maintainer>
   <license>MIT</license>
-  <url type="website">https://github.com/mitmedialab/jibo-gfta-speech-collection</url>
-  <author email="jakory@media.mit.edu">jakory</author>
+  <url type="website">https://github.com/mitmedialab/jibo-teleop</url>
+  <author email="samuelsp@media.mit.edu">samuelsp</author>
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>rospy</build_depend>

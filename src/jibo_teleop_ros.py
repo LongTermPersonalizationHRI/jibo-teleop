@@ -26,6 +26,7 @@
 from PySide import QtGui # basic GUI stuff
 import rospy # ROS
 from jibo_msgs.msg import JiboAction # ROS msgs to talk to Tega
+from jibo_msgs.msg import JiboVec3 # ROS msgs to talk to Tega
 from r1d1_msgs.msg import TegaState # ROS msgs to get info from Tega
 from std_msgs.msg import Bool # for child_attention topic
 from std_msgs.msg import Header # standard ROS msg header
@@ -44,13 +45,6 @@ class jibo_teleop_ros():
         # these are shared flags that the UI code will use to change the colors
         # of text or buttons based on what messages we're getting
         self.flags = flags
-        # subscribe to other ros nodes
-        #TODO could we put list of nodes to subscribe to in config file?
-        # the child attention topic gives us a boolean indicating whether or
-        # not the affdex camera is recognizing a person's face looking in
-        # generally the right direction
-        rospy.Subscriber('child_attention', Bool, self.on_child_attn_msg)
-        rospy.Subscriber('tega_state', TegaState, self.on_tega_state_msg)
 
         # We will publish commands to the tablet and commands to the robot.
         # We might send audio to the audio entrainer on its way to the robot.
@@ -59,18 +53,6 @@ class jibo_teleop_ros():
         #         queue_size = 10)
         self.jibo_pub = rospy.Publisher('jibo', JiboAction, queue_size = 10)
 
-
-    # def send_opal_message(self, command):
-    #     """ Publish opal command message """
-    #     if self.tablet_pub is not None:
-    #         print('sending opal command: %s' % command)
-    #         msg = OpalCommand()
-    #         # add header
-    #         msg.header = Header()
-    #         msg.header.stamp = rospy.Time.now()
-    #         msg.command = command
-    #         self.tablet_pub.publish(msg)
-    #         rospy.loginfo(msg)
 
     def send_motion_message(self, motion):
         """ Publish JiboAction do motion message """
@@ -111,7 +93,7 @@ class jibo_teleop_ros():
             self.jibo_pub.publish(msg)
             rospy.loginfo(msg)
 
-    def send_speech_message(self, speech):
+    def send_tts_message(self, speech):
         """ Publish JiboAction playback TTS message """
         if self.jibo_pub is not None:
             print('\nsending speech message: %s' % speech)
@@ -124,29 +106,44 @@ class jibo_teleop_ros():
             self.jibo_pub.publish(msg)
             rospy.loginfo(msg)
 
-    def send_fidget_message(self, fidget):
-        """ Publish TegaAction message setting the fidget set in use. """
-        if self.tega_pub is not None:
-            print('\nsending fidget message: %s' % fidget)
-            msg = TegaAction()
-            # add header
-            msg.header = Header()
-            msg.header.stamp = rospy.Time.now()
-            msg.fidgets = fidget
-            self.tega_pub.publish(msg)
-            rospy.loginfo(msg)
 
     def send_volume_message(self, volume):
-        """ Publish TegaAction message setting the percent volume to use. """
-        if self.tega_pub is not None:
+        """ Publish JiboAction message setting the percent volume to use. """
+        if self.jibo_pub is not None:
             print('\nsending volume message: %s' % volume)
-            msg = TegaAction()
+            msg = JiboAction()
             # add header
             msg.header = Header()
             msg.header.stamp = rospy.Time.now()
-            msg.set_volume = True
-            msg.percent_volume = volume
-            self.tega_pub.publish(msg)
+            msg.do_volume = True
+            msg.volume = volume
+            self.jibo_pub.publish(msg)
+            rospy.loginfo(msg)
+
+    def send_anim_transition_message(self, anim_transition):
+        """ Publish JiboAction message that switches between animation playback modes. """
+        if self.jibo_pub is not None:
+            print('\nsending anim transition message: %s' % anim_transition)
+            msg = JiboAction()
+            # add header
+            msg.header = Header()
+            msg.header.stamp = rospy.Time.now()
+            msg.do_anim_transition = True
+            msg.anim_transition = anim_transition
+            self.jibo_pub.publish(msg)
+            rospy.loginfo(msg)
+
+    def send_led_message(self, red_val, green_val, blue_val):
+        """ Publish JiboAction message that switches between animation playback modes. """
+        if self.jibo_pub is not None:
+            print('\nsending rgb_val message: %s' % str(red_val) + ',' + str(green_val) + ',' + str(blue_val))
+            msg = JiboAction()
+            # add header
+            msg.header = Header()
+            msg.header.stamp = rospy.Time.now()
+            msg.do_led = True
+            msg.led_color = JiboVec3(red_val, green_val, blue_val)
+            self.jibo_pub.publish(msg)
             rospy.loginfo(msg)
 
     def on_child_attn_msg(self, data):
@@ -158,13 +155,11 @@ class jibo_teleop_ros():
         else:
             self.ros_label.setText("Child is NOT ATTENDING")
 
-    def on_tega_state_msg(self, data):
-        # when we get tega state messages, set a flag indicating whether the
+    def on_jibo_state_msg(self, data):
+        # when we get Jibo state message, set a flag indicating whether the
         # robot is in motion or playing sound or not
-        self.flags.tega_is_playing_sound = data.is_playing_sound
+        self.flags.jibo_is_playing_sound = data.is_playing_sound
 
-        # Instead of giving us a boolean to indicate whether tega is in motion
-        # or not, we get the name of the animation. Let's check whether it is
-        # our "idle" animation (usually, the idle animation is either
-        # MOTION_IDLESTILL or MOTION_BREATHING).
-        self.flags.tega_is_doing_motion = data.doing_motion
+        # Instead of giving us a boolean to indicate whether Jibo is in motion
+        # or not, we get the name of the animation.
+        self.flags.jibo_is_doing_motion = data.doing_motion
