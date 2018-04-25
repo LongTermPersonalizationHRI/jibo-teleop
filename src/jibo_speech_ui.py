@@ -148,7 +148,7 @@ class jibo_speech_ui(QtGui.QWidget):
         script_box_label.setText("Pick a script to load: ")
         self.speech_layout.addWidget(script_box_label, 0, 0)
         self.script_list_box = QtGui.QComboBox(self)
-        script_file_list = glob.glob('./scripts/*.json')
+        script_file_list = glob.glob('./teleop_scripts/*.json')
         self.script_list_box.addItems(script_file_list)
         self.script_list_box.activated['QString'].connect(self.load_script)
         self.speech_layout.addWidget(self.script_list_box, 0, 1, 1, 2)

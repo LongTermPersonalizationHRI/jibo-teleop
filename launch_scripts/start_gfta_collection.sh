@@ -21,7 +21,7 @@ if ! [[ $list =~ (^| )$2($| ) ]]; then
 fi
 
 #check $3
-list="rosbag-record no-rosbag"
+list="rosbag-record no-record"
 if ! [[ $list =~ (^| )$3($| ) ]]; then
   echo "error: record option [$3] does not exist"
   echo "Usage: ./start_gfta_collection.sh <participant_id> <experimenter_name> <record_option>"
@@ -34,9 +34,9 @@ mkdir -p rosbag
 
 
 #gnome-terminal --geometry 40x120+0+0 -e "python ../src/jibo-teleop.py $1 $2 $3"
-echo "Make sure you are running from top level of directory (e.g. $ ./launch/start_gfta_collection.sh)"
+echo "Make sure you are running from top level of directory (e.g. $ ./launch_scripts/start_gfta_collection.sh)"
 python ./src/jibo_teleop.py $1 $2
 
 if [ $3 = 'record' ]; then
-  ./scripts/rosbag_record.sh $1 $2 $3
+  ./launch_scripts/rosbag_record.sh $1 $2 $3
 fi

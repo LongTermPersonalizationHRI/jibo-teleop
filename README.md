@@ -1,48 +1,56 @@
 # jibo-teleop
 
-- ROS message definitions for communicating with the Jibo robot
-- A python rosnode for teleoperating the Jibo robot 
-- Scripts for common interactions (e.g. the GFTA assessment and recording speech samples)
+This repository contains several tools for interfacing with the Jibo robot over ROS, including:
 
-Creates a Qt GUI with buttons for triggering speech, lookats, and animations on the robot
+- ROS message definitions for communicating with the Jibo robot
+- A Python ROS node and Qt GUI with buttons for triggering speech, lookats, and animations on the robot
+- Scripts for teleoperating common interactions (e.g. the GFTA assessment and recording speech samples) via the teleop GUI 
 
 ## Installation
 
-If you haven't done this yet, set up a python3 virtual env with:
+### Create virtualenv
+
+If you haven't done this yet, set up and source a python3 virtual env with:
 `virtualenv -p $(which python3) ~/python-virtualenvs/jibo-gfta-py3 --system-site-packages`
 
-YOU ONLY NEED TO DO THIS ONCE!
-
-All subsequent times, you just need to activate it with
+Then, activate it with
 `source ~/python-virtualenvs/jibo-gfta-py3/bin/activate`
 
+
 ### Install System Dependencies
-`sudo apt-get install python3-pyside`
-`sudo apt-get install portaudio19-dev`
-`sudo apt-get install python3-dev`
+- `sudo apt-get install python3-pyside`
+- `sudo apt-get install portaudio19-dev`
+- `sudo apt-get install python3-dev`
 
 ### Install Python Dependencies
 `pip install -r requirements.txt`
 
 ## Configure and Run
 
-`python tega_teleop.py [-h]
+0. Activate the tap game virtualenv
+```bashrc
+source ~/python-virtualenvs/jibo-gfta-py3/bin/activate
+```
+1. Start `roscore` and `rosbridge` *# do not switch to a different terminal window until done loading*
+```bashrc
+$ ./launch_scripts/startROS.sh 
+```
 
-optional arguments:
+2. Start the Teleop
+```bashrc
+./src/jibo-teleop.py
+```
 
-    - `-h`, `--help`: show this help message and exit
+2. Start the GFTA collection
+```bashrc
+./launch_scripts/start_gfta_collection.sh p00 sam no-record
+```
 
-On startup, this python node will try to connect to roscore. If roscore is not
-running, the program will exit.
+3. Connect Jibo to ROS.
+  - Note your `ROSMASTER_URI` from the host computer (where you started `roscore`. E.g., http://192.168.1.100:11311)
+  - Run Jibo-Rosbridge-Receiver skill on the robot. (**input `ROS_IP`, e.g., 192.168.1.XXX**). 
+  - Jibo should say "Connection Confirmed" when he connects to ROSBridge
 
-If this node is running on a network where DNS does not resolve local
-hostnames, you will need to export the environment variables `$ROS_IP` and
-`$ROS_HOSTNAME` to be the public IP address of this node. For example, if the
-machine this node is running on has the IP address "192.168.1.20", you would
-run the commands `export ROS_IP=192.168.1.20` and `export
-ROS_HOSTNAME=192.168.1.20` in your shell prior to starting this node. If this
-IP is static, you may want to put these commands in your bashrc file (or other
-shell rc file)  so you don't have to remember to run them every time.
 
 ### Config
 
@@ -97,16 +105,6 @@ more info.
 The program subscribes to Boolean (True/False) messages on the ROS topic
 "/child\_attention". These messages indicate whether a child is attending to
 the robot/tablet setup or not.
-
-### Relational robot messages
-
-The node publishes
-"/[rr_msgs](https://github.com/mitmedialab/rr_msgs)/EntrainAudio" messages on
-the ROS topic "/rr/entrain_audio".
-
-The node also publishes
-"/[rr_msgs](https://github.com/mitmedialab/rr_msgs)/InteractionState" messages
-on the ROS topic "/rr/state".
 
 
 ## Version Notes
