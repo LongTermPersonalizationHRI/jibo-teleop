@@ -16,7 +16,6 @@ import sys
 from six.moves import queue
 
 import rospy
-from r1d1_msgs.msg import AndroidAudio
 
 USE_USB_MIC = True
 MAX_BUFFER_SIZE_BEFORE_DISCARD = 590 # If buffer exceeds 50M and we aren't recording, dump and start over

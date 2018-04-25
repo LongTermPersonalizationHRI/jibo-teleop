@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <package>
-  <name>jibo_teleop</name>
+  <name>jibo_msgs</name>
   <version>2.0.0</version>
   <description>An interface to remotely teleoperate the Jibo robot and custom action messages for Jibo robot communication</description>
 
-  <maintainer email="samuelsp@media.mit.edu">jakory</maintainer>
+  <maintainer email="samuelsp@media.mit.edu">samuelsp</maintainer>
   <license>MIT</license>
   <url type="website">https://github.com/mitmedialab/jibo-teleop</url>
   <author email="samuelsp@media.mit.edu">samuelsp</author>

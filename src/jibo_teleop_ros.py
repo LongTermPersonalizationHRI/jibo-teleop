@@ -27,7 +27,6 @@ from PySide import QtGui # basic GUI stuff
 import rospy # ROS
 from jibo_msgs.msg import JiboAction # ROS msgs to talk to Tega
 from jibo_msgs.msg import JiboVec3 # ROS msgs to talk to Tega
-from r1d1_msgs.msg import TegaState # ROS msgs to get info from Tega
 from std_msgs.msg import Bool # for child_attention topic
 from std_msgs.msg import Header # standard ROS msg header
 
