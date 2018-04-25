@@ -73,7 +73,7 @@ ehthumbs.db
 src/*.json
 src/*.txt
 /static_scripts/
-!src/tega_teleop_config.example.json
+!src/jibo_teleop_config.json
 !src/example_script.txt
 !src/example_static_script.txt
 

@@ -1,0 +1,4 @@
+{
+    "script": "teleop_scripts/siw_script.json",
+    "static_script": "static_scripts/static_script.json"
+}
