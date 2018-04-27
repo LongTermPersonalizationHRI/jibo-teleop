@@ -109,7 +109,7 @@ class jibo_speech_ui(QtGui.QWidget):
         self.audio_recorder = AudioRecorder()
 
         # stores the label of the last script button to be pressed
-        self.last_clicked_prompt = "test"
+        self.last_script_prompt = "test"
 
 
         json_data=[]
@@ -186,7 +186,7 @@ class jibo_speech_ui(QtGui.QWidget):
         self.record_button.setText('Stop Recording')
         self.record_button.setStyleSheet('QPushButton {color: red;}')
         self.record_button.clicked.connect(self.on_stop_record)
-        self.audio_recorder.start_recording(RECORDING_PATH + self.pid + '_' + self.experimenter + '_' + self.last_clicked_prompt + '.wav')
+        self.audio_recorder.start_recording(RECORDING_PATH + self.pid + '_' + self.experimenter + '_' + self.last_script_prompt + '.wav')
         self.ros_node.send_led_message(45, 100, 245) #set LED to light blue
 
 
@@ -198,7 +198,7 @@ class jibo_speech_ui(QtGui.QWidget):
         self.record_button.setText('Start Recording')
         self.record_button.setStyleSheet('QPushButton {color: green;}')
         self.record_button.clicked.connect(self.on_start_record)
-        self.audio_recorder.stop_recording(RECORDING_PATH + self.pid + '_' + self.experimenter + '_' + self.last_clicked_prompt + '.wav')
+        self.audio_recorder.stop_recording(RECORDING_PATH + self.pid + '_' + self.experimenter + '_' + self.last_script_prompt + '.wav')
         self.ros_node.send_led_message(0, 0, 0) #turn off LED
 
 
@@ -266,7 +266,8 @@ class jibo_speech_ui(QtGui.QWidget):
                 # where one item is the filename and one is an animation to
                 # play back before or after the file
 
-                self.buttons[i].clicked.connect(partial(self.send_script_command, payload, i))
+                is_static = False
+                self.buttons[i].clicked.connect(partial(self.send_script_command, payload, i, is_static))
 
                 # add button to layout, each button takes up three columns
                 self.speech_layout.addWidget(self.buttons[i], row, 0, 1, 3)
@@ -293,7 +294,7 @@ class jibo_speech_ui(QtGui.QWidget):
         static_script.close()
 
         # start script line counter
-        self.current_line_index = 0
+        self.current_static_line_index = 0
 
         # set up the number of option buttons specified in config:
         # where we are putting these buttons in the grid
@@ -338,7 +339,8 @@ class jibo_speech_ui(QtGui.QWidget):
             # when clicked, call send_script_command with the argument
             # that is the filename for the audio to play
 
-            self.static_buttons[i].clicked.connect(partial(self.send_script_command, payload, 1)) #always send 1 as option number so that we dont advance the script
+            is_static = True
+            self.static_buttons[i].clicked.connect(partial(self.send_script_command, payload, 1, is_static)) #always send 1 as option number so that we dont advance the script
             # make button text purple so they are distinct
             self.static_buttons[i].setStyleSheet('QPushButton {color: purple;}')
 
@@ -456,7 +458,9 @@ class jibo_speech_ui(QtGui.QWidget):
 
             
             self.buttons[i] = QtGui.QPushButton(curr_label, self.speech_box)
-            self.buttons[i].clicked.connect(partial(self.send_script_command, payload, i))
+
+            is_static = False
+            self.buttons[i].clicked.connect(partial(self.send_script_command, payload, i, is_static))
             # add button to layout, each button takes up three columns
             self.speech_layout.addWidget(self.buttons[i], row, 0, 1, 3)
             col += 2
@@ -467,7 +471,7 @@ class jibo_speech_ui(QtGui.QWidget):
 
 
 
-    def send_script_command(self, payload, option_num):
+    def send_script_command(self, payload, option_num, is_static_prompt):
         ''' send speech command to robot and update speech options if necessary '''
        
         anim = payload[0]
@@ -496,8 +500,10 @@ class jibo_speech_ui(QtGui.QWidget):
             self.label.setText("Sending TTS message.")
             self.wait_for_speaking()
         
-        self.last_clicked_prompt = label
-        print("UPDATED LAST CLICKED PROMPT TO " + self.last_clicked_prompt)
+        if not is_static_prompt: #if the click came from a static script, don't update the last_script_prompt for recording
+            self.last_script_prompt = label
+
+        print("UPDATED LAST CLICKED PROMPT TO " + self.last_script_prompt)
         # if first option and not paused, autoadvance, call trigger script forward
         if (option_num == 0 and not self.paused):
             self.trigger_script_forward()

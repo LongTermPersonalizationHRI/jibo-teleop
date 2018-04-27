@@ -18,3 +18,6 @@ bool doing_motion
 
 # True when the sound player is playing back a sound on Tega 
 bool is_playing_sound
+
+# True when Jibo is listening to speech
+bool is_listening
