@@ -1,5 +1,0 @@
-[, gfta_audio/repeat_after_me.wav, REPEAT_AFTER_ME]
-[, gfta_audio/anything_else.wav, ANYTHING_ELSE]
-[, gfta_audio/look_at_picture.wav, LOOK_PICTURE]
-[, gfta_audio/look_picture_on_face.wav, LOOK_PICTURE_FACE]
-[, gfta_audio/what_is_happening.wav, WHAT_IS_HAPPENING]

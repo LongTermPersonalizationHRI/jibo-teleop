@@ -68,9 +68,17 @@ file located in src/.
 
 ### More on scripts
 
+Scripts are a way of sequencing and surfacing different commands for the robot in a predetermined order. Scripts are specified in json files, where each line represents a **Page** of message commands that can make Jibo play animations and audio files or say scripted strings through the TTS engine. 
+
+These **Page**s are presented in line order to the teleoperator, and clicking on the first element of the Page  (highlighted in the interface) advance the script to the next page.
+
 #### Basic scripts
 
-#### Animations in scripts
+Basic scripts are stored in the `teleop_scripts` directory, an example is `example_scripts.json`. Basic Scripts are specified in json files, where each line represents a **Page** of message commands that can make Jibo play animations and audio files or say scripted strings through the TTS engine. Each line of the file (i.e., each **Page** in the script) is a list of lists. Each element of that list represents a **Prompt** that will be shown on the **Page** represented by the line.
+ 
+ Each **Prompt** is itself a list with four string elements signifying: what **Animation** to play (if any), what **Audio** file to play (if any), what **TTS** to say (if any), and what **Label** should appear in the teleop interface.
+ 
+ **Prompts** can have any or all combinations of **Animation**, **Audio**, and **TTS** info. Empty fields are represented as empty strings. For nonempty fields, the teleop publisher will attempt to send the appropriate message without regard for possible overlapping playback complications on the robot. 
 
 #### Static scripts
 
@@ -78,16 +86,14 @@ There is the option of including a set of "static script" buttons to trigger
 speech. This is useful if, for example, the robot could always have the option
 of saying "Mmhm" and "Awesome!" regardless of the rest of the script, and if
 you don't want to include these phrases as options on every single line of your
-main script file. Following the example\_static\_script.txt file, make a list
-with one column of audio filenames and one tab-delimited column of button
-labels.
+main script file. Following the example\_static\_script.json file, each line should be a list with a single element,
+a list with four string elements signifying: what animation to play (if any), what sound file to play (if any), what TTS to say (if any), and the UI Label.
 
 You probably shouldn't list more than 3-5 of these "always there" speech
 buttons, since otherwise the interface may start to look clunky with too many
 buttons.
 
 ## ROS messages
-
 
 ### JIBO messages
 
@@ -99,12 +105,6 @@ The program subscribes to
 
 See [/r1d1\_msgs](https://github.com/mitmedialab/r1d1_msgs "/r1d1_msgs") for
 more info.
-
-### Affdex attention messages
-
-The program subscribes to Boolean (True/False) messages on the ROS topic
-"/child\_attention". These messages indicate whether a child is attending to
-the robot/tablet setup or not.
 
 
 ## Version Notes
