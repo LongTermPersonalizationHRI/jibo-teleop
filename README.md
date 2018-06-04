@@ -43,7 +43,7 @@ $ ./launch_scripts/startROS.sh
 
 2. Start the GFTA collection
 ```bashrc
-./launch_scripts/start_gfta_collection.sh p00 sam no-record
+./launch_scripts/start_gfta_collection.sh p000 sam no-record
 ```
 
 3. Connect Jibo to ROS.
