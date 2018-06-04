@@ -68,6 +68,7 @@ class AudioRecorder:
             #print(audio.get_device_info_by_host_api_device_index(0, i).get('name'))
             if (audio.get_device_info_by_host_api_device_index(0, i).get('maxInputChannels')) > 0:
                 print(audio.get_device_info_by_host_api_device_index(0, i).get('name'))
+                print("^ audio host name")
                 if audio.get_device_info_by_host_api_device_index(0, i).get('name') == self.EXTERNAL_MIC_NAME:
                     mic_index = i
                     break
