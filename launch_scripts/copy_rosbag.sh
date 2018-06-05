@@ -1,1 +1,1 @@
-./scripts/mvg -g rosbag/*.bag* /mnt/hgfs/Rosbag/
+./launch_scripts/mvg -g rosbag/*.bag* /mnt/hgfs/Rosbag/
