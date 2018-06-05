@@ -32,12 +32,14 @@ fi
 mkdir -p log
 mkdir -p rosbag
 
-if [ $3 = 'rosbag-record' ]; then
-  gnome-terminal --geometry 40x120+0+0 -e "./launch_scripts/rosbag_record.sh $1 $2 $3"
-fi
+
 
 #gnome-terminal --geometry 40x120+0+0 -e "python ../src/jibo-teleop.py $1 $2 $3"
 echo "Make sure you are running from top level of directory (e.g. $ ./launch_scripts/start_gfta_collection.sh)"
-python ./src/jibo_teleop.py $1 $2
+python ./src/jibo_teleop.py $1 $2 &
+
+if [ $3 = 'rosbag-record' ]; then
+  ./launch_scripts/rosbag_record.sh $1 $2 $3
+fi
 
 
