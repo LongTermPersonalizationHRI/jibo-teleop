@@ -62,42 +62,13 @@ string SAD_ANIM_SHAKE_HEAD = Misc/Sad_03.keys
 
 # Animations for iSpy Game
 string SILENT_NOD = silent/youre_welcome_02.keys
-string SILENT_HAPPY_DANCE = silent/shaker_01_01.keys
+string SILENT_HAPPY_DANCE = silent/side_shaker_01_01.keys
 string SILENT_YES = silent/nod_twice_01.keys
 string SILENT_PUZZLED = silent/confused_01.keys
 string SILENT_FRUSTRATED = silent/frustrated_02.keys
 string SILENT_SAD = silent/sad_03.keys
 string SILENT_INTERESTED = silent/interested_02.keys
 string SILENT_EXCITED = silent/excited_03.keys
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
