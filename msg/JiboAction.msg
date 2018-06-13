@@ -87,10 +87,10 @@ string ROBOT_INTERESTED = Misc/interested_01.keys
 string ROBOT_YES = Misc/yep_02.keys
 string ROBOT_HAPPY_DANCE = Dances/dance_circuit_saver_00.keys
 string ROBOT_CURIOUS = Misc/puzzled_02_02.keys
-#string ROBOT_ATTENTION = Misc/pose_forward.keys
+string ROBOT_ATTENTION = Misc/pose_forward.keys
 string ROBOT_CELEBRATION = Dances/dance_disco_00.keys
 string ROBOT_ENCOURAGING = Misc/greetings_9.keys
-#string ROBOT_WINK = Misc/eye_medium_blink_01.keys
+string ROBOT_WINK = Misc/eye_medium_blink_01.keys
 string ROBOT_THINKING = Misc/thinking_08.keys
 
 
