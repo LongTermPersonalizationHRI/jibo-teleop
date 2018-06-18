@@ -12,7 +12,7 @@ if ! [[ $list =~ (^| )$1($| ) ]]; then
 fi
 
 #check $2
-list="sam gary amber alejandra alizam branh saf nial"
+list="sam gary amber alejandra alizam branh saf nial annarose"
 if ! [[ $list =~ (^| )$2($| ) ]]; then
   echo "error: experimenter [$2] does not exist"
   echo "Usage: ./start_gfta_collection.sh <participant_id> <experimenter_name> <record_option>"
