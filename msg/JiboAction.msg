@@ -60,19 +60,22 @@ string CELEBRATE_ANIM = Dances/Celebrate_01.keys
 string LAUGH_ANIM = Misc/Laughter_01_03.keys
 string SAD_ANIM_SHAKE_HEAD = Misc/Sad_03.keys
 
+#
 # Animations for iSpy Game
+#
+
 string LOOK_LEFT_RIGHT = Misc/checking_05_01.keys
 string LOOK_DOWN_CENTER = Misc/embarassed_01_02.keys
 
 # Silent animations
-string SILENT_NOD = silent/youre_welcome_02.keys
-string SILENT_HAPPY_DANCE = Dances/side_shaker_01_01.keys
-string SILENT_YES = silent/nod_twice_01.keys
-string SILENT_PUZZLED = silent/confused_01.keys
-string SILENT_FRUSTRATED = silent/frustrated_02.keys
-string SILENT_SAD = silent/sad_03.keys
-string SILENT_INTERESTED = silent/interested_02.keys
-string SILENT_EXCITED = silent/excited_03.keys
+string ROBOT_SILENT_NOD = silent/youre_welcome_02.keys
+string ROBOT_SILENT_HAPPY_DANCE = Dances/side_shaker_01_01.keys
+string ROBOT_SILENT_YES = silent/nod_twice_01.keys
+string ROBOT_SILENT_PUZZLED = silent/confused_01.keys
+string ROBOT_SILENT_FRUSTRATED = silent/frustrated_02.keys
+string ROBOT_SILENT_SAD = silent/sad_03.keys
+string ROBOT_SILENT_INTERESTED = silent/interested_02.keys
+string ROBOT_SILENT_EXCITED = silent/excited_03.keys
 
 # Sad emotions
 string ROBOT_SAD = Misc/sad_02.keys
