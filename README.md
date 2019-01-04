@@ -27,7 +27,7 @@ Then, activate it with
 
 ## Configure and Run
 
-0. Activate the tap game virtualenv
+0. Activate the virtualenv
 ```bashrc
 source ~/python-virtualenvs/jibo-gfta-py3/bin/activate
 ```
